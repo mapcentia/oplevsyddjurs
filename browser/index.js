@@ -66,6 +66,14 @@ var googleUrl;
 
 var taxPlaces = {};
 
+var metaDataKeys;
+
+var iconUrl = "https://webkort.syddjurs.dk/images/custom/map-icons/";
+
+var icons = [];
+
+var jRespond = require('jrespond');
+
 handlebars.registerHelper('checklength', function (v1, v2, options) {
     'use strict';
     // if (v1.length > v2) {
@@ -122,7 +130,7 @@ var sourceShare =
     '<div id="share-buttons" style="text-align: center" class="bs-component btn-group-sm">' +
     '<a href="javascript:void(0)" class="btn btn-default btn-fab btn-share" data-some-site="facebook" data-poi-id="{{id}}"><i class="material-icons fa fa-facebook"></i></a>' +
     '<a href="javascript:void(0)" class="btn btn-default btn-fab btn-share" data-some-site="twitter" data-poi-id="{{id}}"><i class="material-icons fa fa-twitter"></i></a>' +
-    '<a href="javascript:void(0)" class="btn btn-default btn-fab btn-share" data-todo-id="{{gid}}"><i class="material-icons">directions</i></a>' +
+    '<a href="javascript:void(0)" class="btn btn-default btn-fab btn-share" data-todo-id="{{uuid}}"><i class="material-icons">directions</i></a>' +
     '</div>' +
 
     '<script>' +
@@ -153,7 +161,7 @@ module.exports = module.exports = {
     },
     init: function () {
 
-        var parent = this, layerName, metaData, i;
+        var parent = this, layerName, metaData, i, styleFn;
 
         parent.getTaxPlaces();
 
@@ -165,15 +173,28 @@ module.exports = module.exports = {
 
         backboneEvents.get().on("ready:meta", function () {
 
+            metaDataKeys = meta.getMetaDataKeys();
             metaData = meta.getMetaData();
 
             for (i = 0; i < metaData.data.length; ++i) {
                 layerName = "v:" + metaData.data[i].f_table_schema + "." + metaData.data[i].f_table_name;
 
+                if (typeof JSON.parse(metaData.data[i].meta).vectorstyle !== "undefined") {
+                    try {
+                        console.info(JSON.parse(metaData.data[i].meta).vectorstyle);
+                        styleFn = eval(JSON.parse(metaData.data[i].meta).vectorstyle);
+                    } catch (e) {
+                        console.error(styleFn);
+                        console.error(e.message);
+                        styleFn = function () {
+                        };
+                    }
+                }
+
                 vectorLayers.setOnEachFeature(layerName, function (feature, layer) {
                     layer.on("click", function () {
                         console.log(feature.properties);
-                        parent.createInfoContent(feature.properties.gid);
+                        parent.createInfoContent(feature.properties.uuid);
                     });
                 });
 
@@ -183,8 +204,8 @@ module.exports = module.exports = {
 
                     $.each(store.geoJSON.features, function (i, v) {
 
-                        featuresWithKeys[v.properties.gid] = v.properties;
-                        featuresWithKeys[v.properties.gid].geometry = v.geometry;
+                        featuresWithKeys[v.properties.uuid] = v.properties;
+                        featuresWithKeys[v.properties.uuid].geometry = v.geometry;
 
                     });
 
@@ -203,7 +224,7 @@ module.exports = module.exports = {
 
                 vectorLayers.setOnSelect(layerName, function (id, layer) {
 
-                    parent.createInfoContent(layer.feature.properties.gid);
+                    parent.createInfoContent(layer.feature.properties.uuid);
 
                 });
 
@@ -234,43 +255,95 @@ module.exports = module.exports = {
                     ]
                 );
 
-                vectorLayers.setStyle(layerName,
-                    {
-                        weight: 5,
-                        color: '#ff00ff',
-                        dashArray: '',
-                        fillOpacity: 0.2
-                    }
-                );
+                vectorLayers.setStyle(layerName, styleFn);
 
-                vectorLayers.setPointToLayer(layerName, function (feature, latlng) {
+                try {
+                    icons[layerName] = iconUrl + JSON.parse(metaDataKeys[layerName.split(":")[1]].meta).oplev_ikon;
+                } catch (e) {
+
+                }
+
+                vectorLayers.setPointToLayer(layerName, function (ln, feature, latlng) {
 
                         return L.marker(latlng, {
                             icon: L.ExtraMarkers.icon({
-                                icon: feature.properties.icon === 1 ? 'fa-eye' :
-                                    feature.properties.icon === 2 ? 'fa-eye' :
-                                        feature.properties.icon === 3 ? 'fa-book' : 'fa-question',
+                                innerHTML: "<img style='width: 20px; top: 8px; position: relative;' src='" + icons[ln] + "'>",
                                 //number: 'V',
                                 markerColor: 'black',
-                                shape: feature.properties.icon === 1 ? 'star' :
-                                    feature.properties.icon === 2 ? 'circle' :
-                                        feature.properties.icon === 3 ? 'square' : 'circle'
-
-                                ,
+                                shape: 'circle',
                                 prefix: 'fa',
                                 iconColor: "#fff",
                                 //innerHTML: '<svg width="20" height="30"> <circle cx="10" cy="15" r="10" stroke="green" stroke-width="1" fill="yellow" /> </svg>'
                             })
                         });
-                    }
+                    }.bind(this, layerName)
                 );
             }
 
             backboneEvents.get().on("ready:vectorLayers", function () {
-               // vectorLayers.switchLayer(layerName, true);
+                // vectorLayers.switchLayer(layerName, true);
             });
 
             vectorLayers.createLayerTree();
+
+            var vPanel = $('[id^="vectorlayer-panel"]');
+
+            var jRes = jRespond([
+                {
+                    label: 'handheld',
+                    enter: 0,
+                    exit: 767
+                },
+                {
+                    label: 'desktop',
+                    enter: 768,
+                    exit: 10000
+                }
+            ]);
+            jRes.addFunc({
+                breakpoint: ['handheld'],
+                enter: function () {
+                    console.log("Enter handheld");
+                    $("#burger-btn").css("display", "block");
+                    $(".slide-left").css("display", "block");
+                    $("#vectorlayers").append(vPanel);
+                    vPanel.css("float", "none");
+                    vPanel.css("margin-left", "0");
+                    vPanel.css("width", "100%");
+                    $("[id^='vectorcollapse']").css("max-height", "none");
+                    $("[id^='vectorcollapse']").css("overflow", "hidden");
+                },
+                exit: function () {
+                    console.log("Exit handheld");
+
+                }
+            });
+            jRes.addFunc({
+                breakpoint: ['desktop'],
+                enter: function () {
+                    console.log("Enter desktop");
+                    $("#burger-btn").css("display", "none");
+                    $(".slide-left").css("display", "none");
+                    $("#desktop-menu-container").append(vPanel);
+                    vPanel.css("float", "left");
+                    vPanel.css("margin-left", "20px");
+                    vPanel.css("width", "250px");
+                    $("[id^='vectorcollapse']").css("max-height", "calc(100vh - 50px)");
+
+                    $("[id^='vectorcollapse']").on('mouseenter touchstart', function () {
+                        $(this).css("overflow", "auto");
+                    });
+
+                    $("[id^='vectorcollapse']").on('mouseleave touchend', function () {
+                        $(this).css("overflow", "hidden");
+                    });
+
+                },
+                exit: function () {
+                    console.log("Exit desktop");
+
+                }
+            });
 
         });
 
@@ -333,14 +406,14 @@ module.exports = module.exports = {
             url: "/api/extension/oplevsyddjurs",
             type: "GET",
             success: function (data) {
-                console.log(data);
+                //console.log(data);
 
                 data["tax-places"].map(function (v, i) {
-                    console.log(v);
+                    // console.log(v);
                     taxPlaces[v.place["Term ID"]] = v.place;
                 });
 
-                console.log(taxPlaces);
+                //console.log(taxPlaces);
 
 
             },
@@ -713,5 +786,8 @@ class TodoApp extends React.Component {
         );
     }
 }
+
+
+
 
 

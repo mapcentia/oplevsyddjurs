@@ -326,6 +326,42 @@
         margin-bottom: 20px;
     }
 
+    #desktop-menu-container {
+        width: 100%;
+        display: block;
+        position: fixed;
+        z-index: 999999;
+        pointer-events: none !important;
+        margin-left: 280px;
+        max-height: 100vh;
+        padding-top: 11px;
+    }
+
+    [id^="vectorlayer-panel"] {
+        pointer-events: all;
+    }
+
+    .container {
+        width: 100%;
+        margin: 0;
+    }
+
+    .refresh-vector-layer {
+        display: none !important;
+    }
+
+    .overlay-label {
+        width: 100% !important;
+    }
+
+    .layer-sub-order-header {
+        color: #222222;
+        padding-top: 8px;
+        padding-left: 14px;
+        font-size: 16px;
+        font-weight: 400;
+    }
+
     @media (max-width: 767px) {
         .dialog-bottom {
             min-width: 100%;
@@ -381,21 +417,11 @@
 <!-- map -->
 <div id="pane">
 
+    <div id="desktop-menu-container" class="fade-then-dragging"></div>
     <div id="container">
-        <div id="switcher">
-            <div id="btn-kort" class="active"><h3>Kort</h3></div>
-            <div id="btn-list"><h3>List</h3></div>
-        </div>
         <div id="map"></div>
-        <div id="list">
-            <div id="switcher-list">
-                <div id="btn-list-dis" class="active"><h3>Afstand</h3></div>
-                <div id="btn-list-alpha"><h3>A - Å</h3></div>
-            </div>
-            <div id="inner-list"></div>
-        </div>
 
-        <div id="floating-container-primary">
+        <div id="floating-container-primary" class="fade-then-dragging">
             <a href="javascript:void(0)" id="zoom-in-btn" class="btn btn-default btn-fab btn-fab-mini"><i
                     class="material-icons">add</i></a>
             <a href="javascript:void(0)" id="zoom-default-btn" class="btn btn-default btn-fab btn-fab-mini"><i
@@ -404,7 +430,7 @@
                     class="material-icons">remove</i></a>
         </div>
 
-        <div id="floating-container-secondary">
+        <div id="floating-container-secondary" class="fade-then-dragging">
             <div id="locale-btn"></div>
             <a href="#todo-list-dialog" id="todo-btn" class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
                     class="material-icons">directions</i></a>
@@ -418,7 +444,7 @@
     </div>
 
     <!-- Nav bar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top fade-then-dragging">
         <div class="container">
             <div class="navbar-header">
 
@@ -441,7 +467,7 @@
         </div>
     </nav>
 
-    <div id="base-layers-dialog" class="dialog-bottom">
+    <div id="base-layers-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
             <button type="button" class="close close-hide" aria-hidden="true"><i class="material-icons">close</i>
             </button>
@@ -456,7 +482,7 @@
         </div>
     </div>
 
-    <div id="todo-list-dialog" class="dialog-bottom">
+    <div id="todo-list-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
             <button type="button" class="close close-hide" aria-hidden="true"><i class="material-icons">close</i>
             </button>
@@ -572,7 +598,7 @@
     </div>
 
 
-    <div id="info-modal" class="slide-left">
+    <div id="info-modal" class="slide-left fade-then-dragging">
         <div class="modal-header">
             <button type="button" class="close" aria-hidden="true">×</button>
             <h3 class="modal-title">Oplev Syddjurs</h3>

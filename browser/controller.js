@@ -139,8 +139,6 @@ module.exports = {
             cloud.get().zoomToExtent(setting.getExtent());
         });
 
-
-
         $(document).arrive('.btn-share', function () {
             $(this).on("click", function (e) {
                 var site = $(this).data('some-site'),
