@@ -118,13 +118,7 @@ var source1 =
     '{{else}}' +
     '<img style="width: 100%" src="https://s3-eu-west-1.amazonaws.com/mapcentia-www/vmus/{{images.[0]}}" alt="">' +
 
-    '{{/checklength}}' +
-
-    '{{#if video}}' +
-    '<div class="embed-responsive embed-responsive-16by9">' +
-    '<iframe class="embed-responsive-item" src="{{video}}?rel=0&modestbranding=1&fs=0&autohide=1&showinfo=0&wmode=transparent" allowfullscreen></iframe>' +
-    '</div>' +
-    '{{/if}}';
+    '{{/checklength}}';
 
 var sourceShare =
     '<div id="share-buttons" style="text-align: center" class="bs-component btn-group-sm">' +
@@ -179,21 +173,20 @@ module.exports = module.exports = {
             for (i = 0; i < metaData.data.length; ++i) {
                 layerName = "v:" + metaData.data[i].f_table_schema + "." + metaData.data[i].f_table_name;
 
-                if (typeof JSON.parse(metaData.data[i].meta).vectorstyle !== "undefined") {
-                    try {
-                        console.info(JSON.parse(metaData.data[i].meta).vectorstyle);
-                        styleFn = eval(JSON.parse(metaData.data[i].meta).vectorstyle);
-                    } catch (e) {
-                        console.error(styleFn);
-                        console.error(e.message);
-                        styleFn = function () {
-                        };
-                    }
-                }
+                // if (typeof JSON.parse(metaData.data[i].meta).vectorstyle !== "undefined") {
+                //     try {
+                //         console.info(JSON.parse(metaData.data[i].meta).vectorstyle);
+                //         styleFn = eval(JSON.parse(metaData.data[i].meta).vectorstyle);
+                //     } catch (e) {
+                //         console.error(styleFn);
+                //         console.error(e.message);
+                //         styleFn = function () {
+                //         };
+                //     }
+                // }
 
                 vectorLayers.setOnEachFeature(layerName, function (feature, layer) {
                     layer.on("click", function () {
-                        console.log(feature.properties);
                         parent.createInfoContent(feature.properties.uuid);
                     });
                 });
@@ -358,8 +351,12 @@ module.exports = module.exports = {
 
     createInfoContent: function (id) {
 
-        //featuresWithKeys[id].text = converter.makeHtml(featuresWithKeys[id].tekst);
-        featuresWithKeys[id].title = featuresWithKeys[id].navn;
+        console.log(id);
+        console.log(featuresWithKeys[id]);
+        console.log(taxPlaces);
+
+        featuresWithKeys[id].text = (featuresWithKeys[id].beskrivels);
+        featuresWithKeys[id].title = featuresWithKeys[id].title;
         //featuresWithKeys[id].images = featuresWithKeys[id].billeder;
 
         var html = template1(featuresWithKeys[id]);
@@ -368,13 +365,13 @@ module.exports = module.exports = {
 
         $("#click-modal").modal({});
         $("#click-modalLabel").html(featuresWithKeys[id].navn);
-        $("#click-modal .modal-body").html(html + htmlShare);
+        $("#click-modal .modal-body").html(html);
 
 
         // DISQUS setup
         // ============
 
-        if (typeof DISQUS === "undefined") {
+        /*if (typeof DISQUS === "undefined") {
             var d = document, s = d.createElement("script");
             s.src = "https://vidi-mapcentia-com.disqus.com/embed.js";
             s.setAttribute("data-timestamp", +new Date());
@@ -396,7 +393,7 @@ module.exports = module.exports = {
                 }, 100)
             }
 
-        })();
+        })();*/
 
     },
 

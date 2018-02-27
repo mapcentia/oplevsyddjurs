@@ -6,7 +6,7 @@ var request = require('request');
 router.get('/api/extension/oplevsyddjurs', function (req, response) {
     var url;
 
-    url = "http://oplevtestsite.test-subsites.syddjurs.dk/os2web-taxonomies-tax-places-data";
+    url = "http://oplev.subsites.syddjurs.dk/os2web-taxonomies-tax-places-data";
 
     var options = {
         method: 'GET',
