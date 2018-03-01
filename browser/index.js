@@ -171,19 +171,23 @@ module.exports = module.exports = {
             metaData = meta.getMetaData();
 
             for (i = 0; i < metaData.data.length; ++i) {
-                layerName = "v:" + metaData.data[i].f_table_schema + "." + metaData.data[i].f_table_name;
 
-                // if (typeof JSON.parse(metaData.data[i].meta).vectorstyle !== "undefined") {
-                //     try {
-                //         console.info(JSON.parse(metaData.data[i].meta).vectorstyle);
-                //         styleFn = eval(JSON.parse(metaData.data[i].meta).vectorstyle);
-                //     } catch (e) {
-                //         console.error(styleFn);
-                //         console.error(e.message);
-                //         styleFn = function () {
-                //         };
-                //     }
-                // }
+                if (JSON.parse(metaData.data[i].meta) !== null && typeof JSON.parse(metaData.data[i].meta).usetiles !== "undefined" && JSON.parse(metaData.data[i].meta).usetiles === true) {
+                    layerName = metaData.data[i].f_table_schema + "." + metaData.data[i].f_table_name;
+                } else {
+                    layerName = "v:" + metaData.data[i].f_table_schema + "." + metaData.data[i].f_table_name;
+                }
+
+                if (JSON.parse(metaData.data[i].meta) !== null && typeof JSON.parse(metaData.data[i].meta).vectorstyle !== "undefined") {
+                    try {
+                        styleFn = eval("(" + JSON.parse(metaData.data[i].meta).vectorstyle + ")");
+                    } catch (e) {
+                        console.error(styleFn);
+                        console.error(e.message);
+                        styleFn = function () {
+                        };
+                    }
+                }
 
                 vectorLayers.setOnEachFeature(layerName, function (feature, layer) {
                     layer.on("click", function () {
