@@ -74,51 +74,10 @@ var icons = [];
 
 var jRespond = require('jrespond');
 
-handlebars.registerHelper('checklength', function (v1, v2, options) {
-    'use strict';
-    // if (v1.length > v2) {
-    //     return options.fn(this);
-    // }
-    // return options.inverse(this);
-});
-
 var source1 =
     '<h1>{{{title}}}</h1>' +
     '<div>{{{text}}}</div>' +
-    '<div id="myCarousel" class="carousel slide" data-ride="carousel">' +
-
-    '{{#checklength images 1}}' +
-
-    '<ol class="carousel-indicators">' +
-    '{{#images}}' +
-    '<li data-target="#myCarousel" data-slide-to="{{@index}}"  class="{{#if @first}}active{{/if}}"></li>' +
-    '{{/images}}' +
-    '</ol>' +
-
-    '<div class="carousel-inner" role="listbox">' +
-    '{{#images}}' +
-    '<div class="item {{#if @first}}active{{/if}}">' +
-    '<img style="width: 100%" src="https://s3-eu-west-1.amazonaws.com/mapcentia-www/vmus/{{.}}" alt="">' +
-    '<div class="carousel-caption">' +
-    //'<p>{{[1]}}</p>' +
-    '</div>' +
-    '</div>' +
-    '{{/images}}' +
-    '</div>' +
-    '<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">' +
-    '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>' +
-    '<span class="sr-only">Previous</span>' +
-    '</a>' +
-    '<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">' +
-    '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
-    '<span class="sr-only">Next</span>' +
-    '</a>' +
-    '</div>' +
-
-    '{{else}}' +
-    '<img style="width: 100%" src="https://s3-eu-west-1.amazonaws.com/mapcentia-www/vmus/{{images.[0]}}" alt="">' +
-
-    '{{/checklength}}';
+    '<img style="width: 100%; margin-top: 18px" src="{{image}}" alt="">';
 
 var sourceShare =
     '<div id="share-buttons" style="text-align: center" class="bs-component btn-group-sm">' +
@@ -266,7 +225,7 @@ module.exports = module.exports = {
                             icon: L.ExtraMarkers.icon({
                                 innerHTML: "<img style='width: 20px; top: 8px; position: relative;' src='" + icons[ln] + "'>",
                                 //number: 'V',
-                                markerColor: 'black',
+                                markerColor: 'green',
                                 shape: 'circle',
                                 prefix: 'fa',
                                 iconColor: "#fff",
@@ -353,22 +312,22 @@ module.exports = module.exports = {
 
     },
 
-    createInfoContent: function (id) {
+    createInfoContent: function (uuid) {
 
-        console.log(id);
-        console.log(featuresWithKeys[id]);
-        console.log(taxPlaces);
+        console.log(uuid);
+        //console.log(featuresWithKeys[uuid]);
+        console.log(taxPlaces[uuid]);
 
-        featuresWithKeys[id].text = (featuresWithKeys[id].beskrivels);
-        featuresWithKeys[id].title = featuresWithKeys[id].title;
-        //featuresWithKeys[id].images = featuresWithKeys[id].billeder;
+        featuresWithKeys[uuid].title = taxPlaces[uuid]["Term title"];
+        featuresWithKeys[uuid].text = taxPlaces[uuid]["Beskrivelse af term"];
+        featuresWithKeys[uuid].image = taxPlaces[uuid]["Term image"].src;
 
-        var html = template1(featuresWithKeys[id]);
+        var html = template1(featuresWithKeys[uuid]);
 
-        var htmlShare = templateShare(featuresWithKeys[id]);
+        var htmlShare = templateShare(featuresWithKeys[uuid]);
 
         $("#click-modal").modal({});
-        $("#click-modalLabel").html(featuresWithKeys[id].navn);
+        $("#click-modalLabel").html(featuresWithKeys[uuid].navn);
         $("#click-modal .modal-body").html(html);
 
 
@@ -411,7 +370,7 @@ module.exports = module.exports = {
 
                 data["tax-places"].map(function (v, i) {
                     // console.log(v);
-                    taxPlaces[v.place["Term ID"]] = v.place;
+                    taxPlaces[v.place["GIS uid"]] = v.place;
                 });
 
                 //console.log(taxPlaces);
