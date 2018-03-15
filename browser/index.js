@@ -129,6 +129,8 @@ module.exports = module.exports = {
             metaDataKeys = meta.getMetaDataKeys();
             metaData = meta.getMetaData();
 
+
+
             for (i = 0; i < metaData.data.length; ++i) {
 
                 if (JSON.parse(metaData.data[i].meta) !== null && typeof JSON.parse(metaData.data[i].meta).usetiles !== "undefined" && JSON.parse(metaData.data[i].meta).usetiles === true) {
@@ -248,11 +250,11 @@ module.exports = module.exports = {
                 {
                     label: 'handheld',
                     enter: 0,
-                    exit: 767
+                    exit: 1199
                 },
                 {
                     label: 'desktop',
-                    enter: 768,
+                    enter: 1200,
                     exit: 10000
                 }
             ]);
@@ -267,7 +269,6 @@ module.exports = module.exports = {
                     vPanel.css("margin-left", "0");
                     vPanel.css("width", "100%");
                     $("[id^='vectorcollapse']").css("max-height", "none");
-                    $("[id^='vectorcollapse']").css("overflow", "hidden");
                 },
                 exit: function () {
                     console.log("Exit handheld");
@@ -282,17 +283,17 @@ module.exports = module.exports = {
                     $(".slide-left").css("display", "none");
                     $("#desktop-menu-container").append(vPanel);
                     vPanel.css("float", "left");
-                    vPanel.css("margin-left", "20px");
-                    vPanel.css("width", "250px");
+                    vPanel.css("margin-left", "5px");
+                    vPanel.css("width", "230px");
                     $("[id^='vectorcollapse']").css("max-height", "calc(100vh - 50px)");
 
-                    $("[id^='vectorcollapse']").on('mouseenter touchstart', function () {
-                        $(this).css("overflow", "auto");
-                    });
-
-                    $("[id^='vectorcollapse']").on('mouseleave touchend', function () {
-                        $(this).css("overflow", "hidden");
-                    });
+                    // $("[id^='vectorcollapse']").on('mouseenter touchstart', function () {
+                    //     $(this).css("overflow", "auto");
+                    // });
+                    //
+                    // $("[id^='vectorcollapse']").on('mouseleave touchend', function () {
+                    //     $(this).css("overflow", "hidden");
+                    // });
 
                 },
                 exit: function () {
