@@ -1,4 +1,8 @@
 <style>
+    html {
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+
     #list {
         position: absolute;
         height: 100%;
@@ -475,7 +479,6 @@
 </style>
 
 
-
 <!-- map -->
 <div id="pane">
 
@@ -495,7 +498,7 @@
         <div id="floating-container-secondary" class="fade-then-dragging">
             <div id="locale-btn"></div>
             <!--<a href="#todo-list-dialog" id="todo-btn" class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i-->
-                    <!--class="material-icons">directions</i></a>-->
+            <!--class="material-icons">directions</i></a>-->
             <a href="#base-layers-dialog" id="base-layers-btn"
                class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
                     class="material-icons">layers</i></a>
@@ -702,7 +705,22 @@
                 <h4 class="modal-title" id="about-modalLabel">{{About}}</h4>
             </div>
             <div class="modal-body">
-                <div><img class="center" src="https://www.nichehuset.dk/annoncoerer/billeder/555/1482424546_logo.png">
+                <p>Oplevelseskortet giver dig mulighed for at få overblik over hvilke oplevelser der ligger og venter
+                    inden for kategorierne Kunst og kultur, For børn, Sport og fritid og Natur og friluftsliv. Du kan
+                    vælge flere kategorier på én gang og selv sammensætte et kort som passer til dine interesser. Når du
+                    klikker på et punkt eller linje på kortet vil der fremkomme en boks med oplysninger og foto og evt.
+                    links.</p>
+
+                    <!--<p>Tryk på print-ikonet og få et kort med ud på din tur.</p>-->
+
+                    <p>Du kan zoome ind og ud og flytte kortet.</p>
+
+                    <p>Ved at kpkke på positions-ikonet får du vist din position på kortet vha. en blå prik.</p>
+
+                    <p>Du kan få vist et ruteforslag</p>
+                    <p>Du kan ændre baggrundskortet.</p>
+                <div>
+                    <img class="center" src="https://www.nichehuset.dk/annoncoerer/billeder/555/1482424546_logo.png">
                 </div>
             </div>
             <div class="modal-footer">
