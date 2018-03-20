@@ -154,6 +154,7 @@ module.exports = module.exports = {
                     layer.on("click", function () {
                         parent.createInfoContent(feature.properties.uuid);
                     });
+
                 });
 
                 vectorLayers.setOnLoad(layerName, function (store) {
@@ -287,13 +288,15 @@ module.exports = module.exports = {
                     vPanel.css("width", "230px");
                     $("[id^='vectorcollapse']").css("max-height", "calc(100vh - 50px)");
 
-                    // $("[id^='vectorcollapse']").on('mouseenter touchstart', function () {
-                    //     $(this).css("overflow", "auto");
-                    // });
-                    //
-                    // $("[id^='vectorcollapse']").on('mouseleave touchend', function () {
-                    //     $(this).css("overflow", "hidden");
-                    // });
+                    $("[id^='vectorcollapse']").on('mouseenter touchstart', function () {
+                        $(this).css("overflow", "auto");
+                        $(this).css("width", "245px");
+                    });
+
+                    $("[id^='vectorcollapse']").on('mouseleave touchend', function () {
+                        $(this).css("overflow", "hidden");
+                        $(this).css("width", "230");
+                    });
 
                 },
                 exit: function () {
@@ -319,18 +322,25 @@ module.exports = module.exports = {
         //console.log(featuresWithKeys[uuid]);
         console.log(taxPlaces[uuid]);
 
-        featuresWithKeys[uuid].title = taxPlaces[uuid]["Term title"];
-        featuresWithKeys[uuid].text = taxPlaces[uuid]["Beskrivelse af term"];
-        featuresWithKeys[uuid].image = taxPlaces[uuid]["Term image"].src;
+        var props ={};
 
-        var html = template1(featuresWithKeys[uuid]);
+        try {
+            props.title = taxPlaces[uuid]["Term title"];
+            props.text = taxPlaces[uuid]["Beskrivelse af term"];
+            props.image = taxPlaces[uuid]["Term image"].src;
+        } catch(e) {
+            props.title = featuresWithKeys[uuid].navn;
+            props.text = featuresWithKeys[uuid].adresse;
+            props.image = "http";
+        }
 
-        var htmlShare = templateShare(featuresWithKeys[uuid]);
+        var html = template1(props);
+
+        var htmlShare = templateShare(props);
 
         $("#click-modal").modal({});
-        $("#click-modalLabel").html(featuresWithKeys[uuid].navn);
+        $("#click-modalLabel").html(props.t);
         $("#click-modal .modal-body").html(html);
-
 
         // DISQUS setup
         // ============
