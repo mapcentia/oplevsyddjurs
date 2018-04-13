@@ -129,8 +129,6 @@ module.exports = module.exports = {
             metaDataKeys = meta.getMetaDataKeys();
             metaData = meta.getMetaData();
 
-
-
             for (i = 0; i < metaData.data.length; ++i) {
 
                 if (JSON.parse(metaData.data[i].meta) !== null && typeof JSON.parse(metaData.data[i].meta).usetiles !== "undefined" && JSON.parse(metaData.data[i].meta).usetiles === true) {
@@ -143,8 +141,8 @@ module.exports = module.exports = {
                     try {
                         styleFn = eval("(" + JSON.parse(metaData.data[i].meta).vectorstyle + ")");
                     } catch (e) {
-                        console.error(styleFn);
-                        console.error(e.message);
+                        //console.error(styleFn);
+                        //console.error(e.message);
                         styleFn = function () {
                         };
                     }
@@ -305,6 +303,22 @@ module.exports = module.exports = {
                 }
             });
 
+            // If uuid is sat in URL
+            if (urlVars.uuid) {
+                $.getJSON("/api/extension/oplevsyddjurs/uuid/" + urlVars.uuid, function (data) {
+                    vectorLayers.switchLayer("v:" + data.data.rel, true).done(function () {
+                        var layers = vectorLayers.getStores()["v:" + data.data.rel].layer._layers;
+                        Object.keys(layers).forEach(function (key) {
+                                if (urlVars.uuid === layers[key].feature.properties.uuid) {
+                                    cloud.get().map.fitBounds(layers[key].getBounds(), {maxZoom: 18});
+                                }
+                            });
+                    });
+
+                }).fail(function () {
+                }).done(function () {
+                });
+            }
         });
 
         try {

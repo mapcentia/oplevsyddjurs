@@ -29,4 +29,32 @@ router.get('/api/extension/oplevsyddjurs', function (req, response) {
         response.send(JSON.parse(body));
     })
 });
+
+router.get('/api/extension/oplevsyddjurs/uuid/:uuid', function (req, response) {
+    var url, uuid = req.params.uuid;
+
+    url = "https://geocloud.syddjurs.dk/extensions/multisearch/api/search/syddjursgis/puk/" + uuid;
+
+    var options = {
+        rejectUnauthorized: false,
+        method: 'GET',
+        uri: url
+    };
+
+    request.get(options, function (err, res, body) {
+        if (err) {
+
+            response.header('content-type', 'application/json');
+            response.status(400).send({
+                success: false,
+                message: err
+            });
+
+            return;
+        }
+
+        response.send(JSON.parse(body));
+    })
+});
+
 module.exports = router;
