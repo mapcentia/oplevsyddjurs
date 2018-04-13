@@ -303,6 +303,7 @@ module.exports = module.exports = {
                 }
             });
 
+
             // If uuid is sat in URL
             if (urlVars.uuid) {
                 $.getJSON("/api/extension/oplevsyddjurs/uuid/" + urlVars.uuid, function (data) {
