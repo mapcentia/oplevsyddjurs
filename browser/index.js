@@ -71,6 +71,7 @@ var metaDataKeys;
 var iconUrl = "https://webkort.syddjurs.dk/images/custom/map-icons/";
 
 var icons = [];
+var defaultImages = [];
 
 var jRespond = require('jrespond');
 
@@ -148,12 +149,12 @@ module.exports = module.exports = {
                     }
                 }
 
-                vectorLayers.setOnEachFeature(layerName, function (feature, layer) {
-                    layer.on("click", function () {
-                        parent.createInfoContent(feature.properties.uuid);
-                    });
-
-                });
+                vectorLayers.setOnEachFeature(layerName, function (ln, feature, layer) {
+                        layer.on("click", function () {
+                            parent.createInfoContent(feature.properties.uuid, ln);
+                        });
+                    }.bind(this, layerName)
+                );
 
                 vectorLayers.setOnLoad(layerName, function (store) {
 
@@ -174,15 +175,13 @@ module.exports = module.exports = {
                             parr.pop();
                         }
 
-                        parent.createInfoContent(parr.join());
+                        parent.createInfoContent(parr.join(), layerName);
                     }
 
                 });
 
                 vectorLayers.setOnSelect(layerName, function (id, layer) {
-
-                    parent.createInfoContent(layer.feature.properties.uuid);
-
+                    parent.createInfoContent(layer.feature.properties.uuid, layerName);
                 });
 
                 vectorLayers.setOnMouseOver(layerName, _.debounce(function (id, layer) {
@@ -216,6 +215,11 @@ module.exports = module.exports = {
 
                 try {
                     icons[layerName] = iconUrl + JSON.parse(metaDataKeys[layerName.split(":")[1]].meta).oplev_ikon;
+                } catch (e) {
+
+                }
+                try {
+                    defaultImages[layerName] = JSON.parse(metaDataKeys[layerName.split(":")[1]].meta).default_image;
                 } catch (e) {
 
                 }
@@ -310,10 +314,15 @@ module.exports = module.exports = {
                     vectorLayers.switchLayer("v:" + data.data.rel, true).done(function () {
                         var layers = vectorLayers.getStores()["v:" + data.data.rel].layer._layers;
                         Object.keys(layers).forEach(function (key) {
-                                if (urlVars.uuid === layers[key].feature.properties.uuid) {
+                            if (urlVars.uuid === layers[key].feature.properties.uuid) {
+                                if (layers[key] instanceof L.Marker) {
+                                    cloud.get().map.setView(layers[key].getLatLng(), 18);
+                                } else {
                                     cloud.get().map.fitBounds(layers[key].getBounds(), {maxZoom: 18});
                                 }
-                            });
+
+                            }
+                        });
                     });
 
                 }).fail(function () {
@@ -331,22 +340,23 @@ module.exports = module.exports = {
 
     },
 
-    createInfoContent: function (uuid) {
+    createInfoContent: function (uuid, layerName) {
 
-        console.log(uuid);
-        //console.log(featuresWithKeys[uuid]);
-        console.log(taxPlaces[uuid]);
-
-        var props ={};
+        var props = {};
 
         try {
             props.title = taxPlaces[uuid]["Term title"];
             props.text = taxPlaces[uuid]["Beskrivelse af term"];
             props.image = taxPlaces[uuid]["Term image"].src;
-        } catch(e) {
+        } catch (e) {
             props.title = featuresWithKeys[uuid].navn;
             props.text = featuresWithKeys[uuid].adresse;
-            props.image = "http";
+            props.image = null;
+        }
+
+        if (!props.image) {
+            props.image = defaultImages[layerName];
+
         }
 
         var html = template1(props);
