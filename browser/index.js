@@ -329,6 +329,14 @@ module.exports = module.exports = {
                 }).done(function () {
                 });
             }
+
+
+            if (urlVars.layers) {
+                var list = urlVars.layers.split(",");
+                list.map(function (ln) {
+                    vectorLayers.switchLayer("v:" + ln, true)
+                })
+            }
         });
 
         try {
